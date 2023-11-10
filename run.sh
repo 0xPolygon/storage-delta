@@ -1,0 +1,118 @@
+#!/bin/bash
+
+# CLONE OLD VERSION
+
+# Check if the commit hash argument is provided
+if [ -z "$1" ]; then
+    echo "Please provide the commit hash or tag as an argument."
+    exit 1
+fi
+
+# Define the path to the new subdirectory
+old_version="storage_check_cache/"
+
+# Check if the directory exists, then remove it
+exists=0
+if [ -d "$old_version" ]; then
+    # Check if the current commit matches the target commit hash
+    prev_dir=$(pwd)
+    cd "$old_version"
+    if [ "$(git rev-parse HEAD)" = "$1" ]; then
+        exists=1
+    fi
+    cd "$prev_dir"
+    if [ "$exists" -eq 0 ]; then
+      rm -rf "$old_version"
+    fi
+fi
+
+if [ "$exists" -eq 0 ]; then
+  current_dir=$(pwd)
+  # Clone the current directory to the new subdirectory
+  git clone "file://$current_dir" "$old_version"
+  cd "$old_version"
+
+  # Reset to a certain commit
+  git reset --hard "$1"
+
+  forge install
+
+  cd "$current_dir"
+fi
+
+# ========================================================================
+
+# GET FILE NAMES
+
+# Define a function to find .sol files
+find_sol_files() {
+  local dir="$1"
+  local array_name="$2"
+  local filesWithPath=()
+
+  while IFS= read -r -d $'\0' file; do
+    # Append the file name to the array
+    filesWithPath+=("$file")
+  done < <(find "$dir" -type f -name "*.sol" -print0)
+
+  # Assign the array to the variable name specified by the second argument
+  eval "$array_name"='("${filesWithPath[@]}")'
+}
+
+# Specify the directory where you want to search for .sol files
+search_directory="src"
+
+# Declare empty arrays to store the file names
+filesWithPath_old=()
+filesWithPath_new=()
+
+current_dir=$(pwd)
+
+# Call the function for the old version directory
+cd $old_version
+find_sol_files "$search_directory" "filesWithPath_old"
+
+# Call the function for the new version directory
+cd "$current_dir"
+find_sol_files "$search_directory" "filesWithPath_new"
+
+# ========================================================================
+
+# REPORT DELETED ONES
+
+if [ -d "storage_check_report" ]; then
+  rm -rf "storage_check_report"
+fi
+
+differences=()
+for item in "${filesWithPath_old[@]}"; do
+    skip=
+    for itemB in "${filesWithPath_new[@]}"; do
+        [[ $item == $itemB ]] && { skip=1; break; }
+    done
+    [[ -n $skip ]] || differences+=("$item")
+done
+
+if [ ${#differences[@]} -gt 0 ]; then
+    mkdir -p "storage_check_report"
+    printf "%s\n" "${differences[@]}" > "storage_check_report/.removed"
+fi
+
+# ========================================================================
+
+# COMPARE STORAGE LAYOUTS
+
+# Loop through each item in the array
+for line in "${filesWithPath_old[@]}"; do
+  # Check if the line is not empty
+  if [ -n "$line" ] && [[ ! " ${differences[@]} " =~ " ${line} " ]]; then
+    # Run the 'forge inspect' command with the current item from the array
+    formated_name=${line}:$(basename "${line%.*}")
+    cd "$old_version"
+    output_old=$(forge inspect $formated_name storage)
+    cd "$current_dir"
+    output_new=$(forge inspect $formated_name storage)
+
+    node ./lib/storage-layout-checker/_reporter.js "$output_old" "$output_new" ${line}
+  fi
+done
