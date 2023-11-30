@@ -2,7 +2,7 @@
 > Interim repository.
 
 ```
-forge install https://github.com/0xPolygon/storage-layout-checker
+forge install 0xPolygon/storage-layout-checker
 ```
 
 ```
