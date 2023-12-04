@@ -1,9 +1,9 @@
 # Storage Layout Checker
 
 > [!NOTE]
-> This version identifies all differences but doesn't escalate and de-escalate findings.
+> V1 identifies all differences but doesn't escalate and de-escalate findings.
 
-The Storage Layout Checker is a tool meant to simplify contract upgrades. It compares the storage layout between two suite versions and provides insights into the changes.
+Storage Layout Checker is made to simplify contract upgrades. It compares the storage layout between two suite versions and provides insights into the changes.
 
 ## Upcoming Features
 
@@ -38,9 +38,9 @@ The following command will create `storage_check_report` in your project's root 
 bash lib/storage-layout-checker/run.sh <COMMIT_OR_TAG>
 ```
 
-Contracts with identified differences will be listed as `OLD` and `NEW` tables. To examine a finding, open the two files side by side.
+Contracts with identified differences will be listed as `OLD` and `NEW` table files. To examine a finding, open the two files side by side.
 
-Additionally, `removed.txt` file will be created, listing the names of contracts no longer included in the suite.
+Additionally, `removed.txt` file will be created, with the names of removed contracts.
 
 ## Legend
 
