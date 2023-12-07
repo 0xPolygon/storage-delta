@@ -3,5 +3,5 @@
     "version": "0.1.0",
     "main": "index.js",
     "author": "Polygon Labs",
-    "license": "MIT"
+    "license": "(Apache-2.0 OR MIT)"
 }
