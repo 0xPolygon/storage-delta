@@ -46,9 +46,9 @@ Additionally, `removed.txt` file will be created, with the names of deleted cont
 
 | Emoji | Meaning     |
 | ----- | ----------- |
-| ❗️     | Problematic |
-| 🗑️     | Deleted     |
-| ✨     | New         |
+| ❗️    | Problematic |
+| 🗑️    | Deleted     |
+| ✨    | New         |
 
 ---
 
