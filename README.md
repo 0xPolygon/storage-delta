@@ -1,24 +1,6 @@
 # Storage Layout Checker
 
-Storage Layout Checker is made to simplify contract upgrades. It compares the storage layout between two suite versions and provides insights into the changes.
-
-> [!NOTE]
-> V1 identifies all differences but doesn't escalate and de-escalate findings.
-
-## Upcoming Features
-
-### V2
-
-- **Enhanced Detection:** Properly escalates and de-escalates findings.
-- **Dirty Bits Visibility:** Shows where dirty bits are.
-
-### V3
-
-- **Support for Special Variables**: Adds support for `__gap` and `__legacy` variables.
-
-### CI
-
-- **CI Integration**: Runs on push and pull requests.
+The Storage Layout Checker is a tool to inspect changes made to the storage layout between different versions of a smart contract during the development cycle. The tool will compare the storage layout of the contracts in the current commit with the storage layout of the contracts in a specified commit or tag.
 
 ## Requirements
 
@@ -44,11 +26,37 @@ Additionally, `removed.txt` file will be created, with the names of deleted cont
 
 ## Legend
 
-| Emoji | Meaning     |
-| ----- | ----------- |
-| ❗️    | Problematic |
-| 🗑️    | Deleted     |
-| ✨    | New         |
+| Emoji | Meaning         |
+| ----- | --------------- |
+| 🏴    | Dirty           |
+| 🏳️    | Moved           |
+| 🏁    | Dirty and Moved |
+| 🪦    | Removed         |
+| 🌱    | New             |
+
+### Dirty
+
+A variable is considered dirty if the name or type of the variable changes. A dirty variable can also be a new variable that conflicts with the previous storage layout.
+
+### Moved
+
+A variable with the same name and type moved to a new storage slot, but it doesn't conflict with the previous storage layout.
+
+### Dirty and Moved
+
+When a variable is both dirty and moved, it means that the variable has moved to a new storage slot and is conflicting with the previous storage layout.
+
+### Removed
+
+This variable no longer exists in the new version of the contract.
+
+### New
+
+This variable is new in the new version of the contract. Note, when a new contract is added that has a private variable as another contract with the same private variable name and type, it will be flagged as potentially moved.
+
+## Upcoming Features
+
+- **Support for Special Variables**: Adds support for `__gap` and `__legacy` variables.
 
 ## License
 
