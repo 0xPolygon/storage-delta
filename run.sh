@@ -17,7 +17,7 @@ if [ -d "$old_version" ]; then
     # Check if the current commit matches the target commit hash
     prev_dir=$(pwd)
     cd "$old_version"
-    if [ "$(git rev-parse HEAD)" = "$1" ]; then
+    if [ "$(git rev-parse --short HEAD)" = "${1:0:7}" ]; then
         exists=1
     fi
     cd "$prev_dir"
