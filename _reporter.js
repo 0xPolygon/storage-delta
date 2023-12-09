@@ -21,10 +21,8 @@ const newVisualized = createLayout(newData);
 const overlayedVisualized = overlayLayouts(oldVisualized, newVisualized);
 //console.log(JSON.stringify(overlayedVisualized, null, 2));
 
-const alignedOverlayedVisualized = alignOverlayedLayout(overlayedVisualized, oldVisualized);
+const [alignedOverlayedVisualized, alignedOldVisualized] = alignLayouts(overlayedVisualized, oldVisualized);
 //console.log(JSON.stringify(alignedOverlayedVisualized, null, 2));
-
-const alignedOldVisualized = alignOldLayout(oldVisualized, alignedOverlayedVisualized);
 //console.log(JSON.stringify(alignedOldVisualized, null, 2));
 
 if (alignedOldVisualized.length !== alignedOverlayedVisualized.length) {
@@ -79,7 +77,17 @@ for (; i < alignedOldVisualized.length; i++) {
       const diff = overlayedItem.end - overlayedItem.start;
       const s = diff === 1 ? "" : "s";
 
-      reportNew += "               " + diff + " dirty byte" + s + "\n";
+      const itemLike = {
+        ...overlayedItem,
+        label: diff + " dirty byte" + s,
+        type: {
+          label: "",
+        },
+        offset: overlayedItem.start % 32,
+        slot: Math.floor(overlayedItem.start / 32),
+      };
+
+      reportNew += formatLine("  ", itemLike);
       printOld(false);
       continue;
     }
@@ -178,151 +186,76 @@ function processType(type) {
 
 // IN: Old storage layout JSON, new storage layout JSON
 // OUT: New storage layout JSON with dirty bytes visible
-function overlayLayouts(oldJSON, newJSON) {
-  // Step 1: Process old items and mark them as "dirty"
-  const processedOldJSON = oldJSON.map((item) => ({
-    label: "dirty",
-    start: item.start,
-    end: item.end,
-  }));
+function overlayLayouts(oldArray, newArray) {
+  let result = [];
+  // Create a copy of oldArray to avoid modifying the original
+  let oldArrayCopy = oldArray.map((item) => ({ ...item }));
+  let oldIndex = 0,
+    newIndex = 0;
 
-  const result = [];
+  while (oldIndex < oldArrayCopy.length || newIndex < newArray.length) {
+    let oldItem = oldArrayCopy[oldIndex];
+    let newItem = newArray[newIndex];
 
-  let newIndex = 0;
-  let currentNewItem = newJSON[newIndex];
-
-  for (let oldItem of processedOldJSON) {
-    // Step 2: Overlay the items from the new JSON
-    while (currentNewItem && currentNewItem.end <= oldItem.start) {
-      // Add completely non-overlapping new items
-      result.push({ ...currentNewItem });
+    if (newItem && (!oldItem || newItem.start < oldItem.start)) {
+      // Add the new item and advance the new index
+      result.push(newItem);
       newIndex++;
-      currentNewItem = newJSON[newIndex];
-    }
-
-    if (currentNewItem && currentNewItem.start < oldItem.end) {
-      // There is an overlap between the old and new items
-      if (currentNewItem.start > oldItem.start) {
-        // Add the portion of the old item before the overlap
-        result.push({ label: "dirty", start: oldItem.start, end: currentNewItem.start });
-        oldItem.start = currentNewItem.start;
+      // Skip over any old items that are completely overlapped by the new item
+      while (oldItem && newItem.end >= oldItem.end) {
+        oldIndex++;
+        oldItem = oldArrayCopy[oldIndex];
       }
-      if (currentNewItem.end >= oldItem.end) {
-        // The new item completely covers the old item
-        oldItem = null; // Old item is entirely overlapped
+    } else if (oldItem) {
+      // Handle the case where the old item has no corresponding new item
+      if (!newItem || oldItem.end <= newItem.start) {
+        result.push({ label: "dirty", start: oldItem.start, end: oldItem.end });
+        oldIndex++;
       } else {
-        // The new item partially overlaps the old item
-        oldItem.start = currentNewItem.end;
-      }
-    }
+        // Handle partial overlap or complete overlap of the old item by the new item
+        if (oldItem.start < newItem.start) {
+          result.push({ label: "dirty", start: oldItem.start, end: newItem.start });
+        }
 
-    if (oldItem) {
-      // Add any remaining portion of the old item
-      result.push({ ...oldItem });
-    }
-  }
-
-  // Add any remaining new items that do not overlap with old items
-  while (currentNewItem) {
-    result.push({ ...currentNewItem });
-    newIndex++;
-    currentNewItem = newJSON[newIndex];
-  }
-
-  // Sort the result by the "start" property to ensure the order
-  result.sort((a, b) => a.start - b.start);
-
-  return result;
-}
-
-// IN: Overlayed storage layout
-// OUT: Aligned overlayed storage layout
-function alignOverlayedLayout(overlayedVisualized, oldArray) {
-  const result = [];
-  let overlayIndex = 0;
-  let newIndex = 0;
-
-  while (overlayIndex < overlayedVisualized.length && newIndex < oldArray.length) {
-    const overlayItem = overlayedVisualized[overlayIndex];
-    const oldItem = oldArray[newIndex];
-
-    if (overlayItem.start === oldItem.start) {
-      // Copy overlayed item when there's a match
-      result.push({ ...overlayItem });
-      overlayIndex++;
-      newIndex++;
-    } else if (overlayItem.start < oldItem.start) {
-      // Copy overlayed item when it precedes the old item
-      result.push({ ...overlayItem });
-      overlayIndex++;
-    } else {
-      // Insert undefined when oldItem.start is missing in overlayedVisualized
-      result.push(undefined);
-      newIndex++;
-    }
-  }
-
-  // Add any remaining overlayed items
-  while (overlayIndex < overlayedVisualized.length) {
-    result.push({ ...overlayedVisualized[overlayIndex] });
-    overlayIndex++;
-  }
-
-  // Add undefined for any remaining old items
-  while (newIndex < oldArray.length) {
-    result.push(undefined);
-    newIndex++;
-  }
-
-  return result;
-}
-
-// IN: Old storage layout, aligned overlayed storage layout
-// OUT: Aligned old storage layout
-function alignOldLayout(oldArray, alignedOverlayedVisualized) {
-  const result = [];
-  let overlayIndex = 0;
-  let oldIndex = 0;
-
-  while (overlayIndex < alignedOverlayedVisualized.length) {
-    const alignedOverlayedItem = alignedOverlayedVisualized[overlayIndex];
-
-    if (alignedOverlayedItem) {
-      if (oldIndex < oldArray.length) {
-        const oldItem = oldArray[oldIndex];
-
-        if (alignedOverlayedItem.start === oldItem.start) {
-          // Copy old item when there's a match
-          result.push({ ...oldItem });
-          overlayIndex++;
-          oldIndex++;
-        } else if (alignedOverlayedItem.start < oldItem.start) {
-          // Insert undefined when oldItem.start is missing in oldArray
-          result.push(undefined);
-          overlayIndex++;
+        // Update the old item's start if the new item ends within it
+        if (newItem.end < oldItem.end) {
+          oldArrayCopy[oldIndex] = { ...oldItem, start: newItem.end };
         } else {
-          // Copy old item when it precedes the aligned overlayed item
-          result.push({ ...oldItem });
           oldIndex++;
         }
-      } else {
-        // No old item to compare, so insert undefined
-        result.push(undefined);
-        overlayIndex++;
       }
-    } else {
-      // Skip undefined item in alignedOverlayedVisualized
-      overlayIndex++;
     }
   }
 
-  // Handle remaining items in oldArray, if any
-  while (oldIndex < oldArray.length) {
-    result.push({ ...oldArray[oldIndex] });
-    oldIndex++;
+  return result.filter((item) => item.start < item.end);
+}
+
+// IN: Overlayed layout, old layout
+// OUT: Aligned overlayed layout, aligned old layout
+function alignLayouts(layout1, layout2) {
+  // Function to insert missing starts from one layout into another
+  function insertMissingStarts(baseLayout, referenceLayout) {
+    let result = [...baseLayout];
+    const referenceStarts = new Set(referenceLayout.map((item) => item.start));
+
+    for (const start of referenceStarts) {
+      if (!baseLayout.some((item) => item.start === start)) {
+        result.push({ label: "undefined", start: start });
+      }
+    }
+
+    // Sort by start to maintain order
+    result.sort((a, b) => a.start - b.start);
+    return result;
   }
 
-  return result;
+  // Align layout1 with layout2
+  let alignedLayout1 = insertMissingStarts(layout1, layout2);
+
+  // Align layout2 with the updated alignedLayout1
+  let alignedLayout2 = insertMissingStarts(layout2, alignedLayout1);
+
+  return [alignedLayout1, alignedLayout2];
 }
 
 // IN: Storage item, storage item
@@ -363,19 +296,18 @@ function hasExisted(item, oldLayout) {
 // IN: Item from aligned overlayed storage layout, old storage layout
 // OUT: -1 if no start, 0 diff/gt start, 1 if same start
 function checkStart(newItem, oldItem) {
-  if (newItem === undefined && oldItem !== undefined) {
-    return -1; // "new" is undefined
-  } else if (newItem !== undefined && oldItem === undefined) {
-    return 0; // "old" is undefined
-  } else {
-    if (newItem.start !== oldItem.start) {
-      console.warn(
-        "Error: Starts are different.\nThis is a bug. Please, submit a new issue: https://github.com/0xPolygon/storage-layout-checker/issues.",
-      );
-      process.exit(1);
-    }
-    return 1; // Both "new" and "old" are defined
+  if (newItem.label !== "undefined" && oldItem.label !== "undefined") {
+    return 1;
+  } else if (oldItem.label === "undefined") {
+    return 0;
+  } else if (newItem.label === "undefined") {
+    return -1;
   }
+
+  console.warn(
+    "Error: Cannot check start.\nThis is a bug. Please, submit a new issue: https://github.com/0xPolygon/storage-layout-checker/issues.",
+  );
+  process.exit(1);
 }
 
 // IN: Whether line should be empty
