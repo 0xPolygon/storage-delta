@@ -27,7 +27,7 @@ const [alignedOverlayedVisualized, alignedOldVisualized] = alignLayouts(overlaye
 
 if (alignedOldVisualized.length !== alignedOverlayedVisualized.length) {
   console.warn(
-    "Error: Lengths do not match.\nThis is a bug. Please, submit a new issue: https://github.com/0xPolygon/storage-layout-checker/issues.",
+    "Error: Lengths do not match.\nThis is a bug. Please, submit a new issue: https://github.com/0xPolygon/storage-delta/issues.",
   );
   process.exit(1);
 }
@@ -305,7 +305,7 @@ function checkStart(newItem, oldItem) {
   }
 
   console.warn(
-    "Error: Cannot check start.\nThis is a bug. Please, submit a new issue: https://github.com/0xPolygon/storage-layout-checker/issues.",
+    "Error: Cannot check start.\nThis is a bug. Please, submit a new issue: https://github.com/0xPolygon/storage-delta/issues.",
   );
   process.exit(1);
 }

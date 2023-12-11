@@ -1,6 +1,6 @@
-# Storage Layout Checker
+# Storage Delta
 
-The Storage Layout Checker is a tool to inspect changes made to the storage layout between different versions of a smart contract during the development cycle. The tool will compare the storage layout of the contracts in the current commit with the storage layout of the contracts in a specified commit or tag.
+The Storage Delta library is a tool to inspect changes made to the storage layout between different versions of a smart contract during the development cycle. The tool will compare the storage layout of the contracts in the current commit with the storage layout of the contracts in a specified commit or tag.
 
 ## Requirements
 
@@ -9,7 +9,7 @@ The script utilizes Node.js to run. We recommend the node version defined in the
 ## Installation
 
 ```bash
-forge install 0xPolygon/storage-layout-checker
+forge install 0xPolygon/storage-delta
 ```
 
 ## Usage Example
@@ -17,7 +17,7 @@ forge install 0xPolygon/storage-layout-checker
 The following command will create `storage_check_report` in your project's root directory:
 
 ```bash
-bash lib/storage-layout-checker/run.sh <COMMIT_OR_TAG>
+bash lib/storage-delta/run.sh <COMMIT_OR_TAG>
 ```
 
 Contracts with identified differences will be listed as `OLD` and `NEW` table files. To examine a finding, open the two files side by side.
