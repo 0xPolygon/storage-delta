@@ -1,62 +1,138 @@
-# Storage Delta
+# ⟁ Storage Delta
 
-The Storage Delta library is a tool to inspect changes made to the storage layout between different versions of a smart contract during the development cycle. The tool will compare the storage layout of the contracts in the current commit with the storage layout of the contracts in a specified commit or tag.
+Storage Delta is a tool for inspecting storage layout changes between contract upgrades.
 
-## Requirements
+![Demo](./demo.gif)
 
-The script utilizes Node.js to run. We recommend the node version defined in the `.nvmrc` file.
-
-## Installation
+## Install
 
 ```bash
 forge install 0xPolygon/storage-delta
 ```
 
-## Usage Example
+## Usage
 
-The following command will create `storage_check_report` in your project's root directory:
+Storage Delta compares the entire suite to a previous version.
 
 ```bash
 bash lib/storage-delta/run.sh <COMMIT_OR_TAG>
 ```
 
-Contracts with identified differences will be listed as `OLD` and `NEW` table files. To examine a finding, open the two files side by side.
+`./storage_delta` will be generated if there are findings. Open `OLD` and `NEW` files side by side for best experience.
 
-Additionally, `removed.txt` file will be created, with the names of deleted contracts.
+`removed.txt` contains removed contracts.
 
-## Legend
+## Findings
 
-| Emoji | Meaning         |
-| ----- | --------------- |
-| 🏴    | Dirty           |
-| 🏳️    | Moved           |
-| 🏁    | Dirty and Moved |
-| 🪦    | Removed         |
-| 🌱    | New             |
-
-### Dirty
-
-A variable is considered dirty if the name or type of the variable changes. A dirty variable can also be a new variable that conflicts with the previous storage layout.
-
-### Moved
-
-A variable with the same name and type moved to a new storage slot, but it doesn't conflict with the previous storage layout.
-
-### Dirty and Moved
-
-When a variable is both dirty and moved, it means that the variable has moved to a new storage slot and is conflicting with the previous storage layout.
-
-### Removed
-
-This variable no longer exists in the new version of the contract.
+| Emoji | Finding                                    |
+| ----- | ------------------------------------------ |
+| 🏴     | [Problematic](#problematic)                |
+| 🏳️     | [Moved](#moved)                            |
+| 🏁     | [Moved & problematic](#moved--problematic) |
+| 🪦     | [Removed](#removed)                        |
+| 🌱     | [New](#new)                                |
 
 ### New
 
-This variable is new in the new version of the contract. Note, when a new contract is added that has a private variable as another contract with the same private variable name and type, it will be flagged as potentially moved.
+**Emoji:** 🌱
 
-## Upcoming Features
+**Description:**
 
-- **Support for Special Variables**: Adds support for `__gap` and `__legacy` variables.
+When a variable with a unique name and type is added.
+
+**Example:**
+
+```solidity
+uint256 a;
+```
+
+```solidity
+uint256 a;
+bool b;
+```
+
+### Problematic
+
+**Emoji:** 🏴
+
+**Description:**
+
+When a new variable is added, but it conflicts with the existing storage.
+
+**Example:**
+
+```solidity
+uint256 a;
+```
+
+```solidity
+bool b;
+```
+
+### Moved
+
+**Emoji:** 🏳️
+
+**Description:**
+
+When an existing variable is moved.
+
+**Example:**
+
+```solidity
+uint256 a;
+// ...
+```
+
+```solidity
+// ...
+uint256 a;
+```
+
+### Moved & problematic
+
+**Emoji:** 🏁
+
+**Description:**
+
+When an existing variable is moved and conflicts with the existing storage.
+
+**Example:**
+
+```solidity
+uint256 a;
+bool b;
+```
+
+```solidity
+bool b;
+uint256 a;
+```
+
+### Removed
+
+**Emoji:** 🪦
+
+**Description:**
+
+When a variable no longer exists.
+
+**Example:**
+
+```solidity
+uint256 a;
+bool b;
+```
+
+```solidity
+uint256 a;
+```
+
+## Requirements
+
+Files must have the same names as the contracts.
+
+The script utilizes Node.js to run. We recommend the node version defined in the `.nvmrc` file.
 
 ## License
 
