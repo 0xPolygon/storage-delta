@@ -1,5 +1,5 @@
 {
-    "name": "storage-layout-checker",
+    "name": "storage-delta",
     "version": "0.1.0",
     "main": "index.js",
     "author": "Polygon Labs",

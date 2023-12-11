@@ -113,6 +113,6 @@ for line in "${filesWithPath_old[@]}"; do
     cd "$current_dir"
     output_new=$(forge inspect $formated_name storage)
 
-    node ./lib/storage-layout-checker/_reporter.js "$output_old" "$output_new" ${line}
+    node ./lib/storage-delta/_reporter.js "$output_old" "$output_new" ${line}
   fi
 done

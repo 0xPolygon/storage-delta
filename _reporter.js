@@ -29,7 +29,7 @@ const alignedOldVisualized = alignOldLayout(oldVisualized, alignedOverlayedVisua
 
 if (alignedOldVisualized.length !== alignedOverlayedVisualized.length) {
   console.warn(
-    "Error: Lengths do not match.\nThis is a bug. Please, submit a new issue: https://github.com/0xPolygon/storage-layout-checker/issues.",
+    "Error: Lengths do not match.\nThis is a bug. Please, submit a new issue: https://github.com/0xPolygon/storage-delta/issues.",
   );
   process.exit(1);
 }
@@ -370,7 +370,7 @@ function checkStart(newItem, oldItem) {
   } else {
     if (newItem.start !== oldItem.start) {
       console.warn(
-        "Error: Starts are different.\nThis is a bug. Please, submit a new issue: https://github.com/0xPolygon/storage-layout-checker/issues.",
+        "Error: Starts are different.\nThis is a bug. Please, submit a new issue: https://github.com/0xPolygon/storage-delta/issues.",
       );
       process.exit(1);
     }
