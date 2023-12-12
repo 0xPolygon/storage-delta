@@ -1,4 +1,4 @@
-# ⟁ Storage Delta
+# ⟁ Storage Delta &nbsp;&nbsp;![GitHub Repo stars](https://img.shields.io/github/stars/0xPolygon/storage-delta?style=flat-square&labelColor=black&color=yellow)
 
 Storage Delta is a tool for inspecting storage layout changes between contract upgrades.
 
@@ -6,13 +6,15 @@ Storage Delta is a tool for inspecting storage layout changes between contract u
 
 ## Install
 
+To install with [Foundry](https://github.com/foundry-rs/foundry):
+
 ```bash
 forge install 0xPolygon/storage-delta
 ```
 
 ## Usage
 
-Storage Delta compares the entire suite to a previous version.
+Storage Delta compares the entire suite to any previous version.
 
 ```bash
 bash lib/storage-delta/run.sh <COMMIT_OR_TAG>
@@ -20,17 +22,16 @@ bash lib/storage-delta/run.sh <COMMIT_OR_TAG>
 
 `./storage_delta` will be generated if there are findings. Open `OLD` and `NEW` files side by side for best experience.
 
-`removed.txt` contains removed contracts.
-
 ## Findings
 
-| Emoji | Finding                                    |
-| ----- | ------------------------------------------ |
-| 🏴     | [Problematic](#problematic)                |
-| 🏳️     | [Moved](#moved)                            |
-| 🏁     | [Moved & problematic](#moved--problematic) |
-| 🪦     | [Removed](#removed)                        |
-| 🌱     | [New](#new)                                |
+|     | Finding                                    |
+| --- | ------------------------------------------ |
+| 🏴   | [Problematic](#problematic)                |
+| 🏳️   | [Moved](#moved)                            |
+| 🏁   | [Moved & problematic](#moved--problematic) |
+| 🪦   | [Removed](#removed)                        |
+| 🌱   | [New](#new)                                |
+
 
 ### New
 
@@ -51,6 +52,8 @@ uint256 a;
 bool b;
 ```
 
+---
+
 ### Problematic
 
 **Emoji:** 🏴
@@ -68,6 +71,8 @@ uint256 a;
 ```solidity
 bool b;
 ```
+
+---
 
 ### Moved
 
@@ -89,6 +94,8 @@ uint256 a;
 uint256 a;
 ```
 
+---
+
 ### Moved & problematic
 
 **Emoji:** 🏁
@@ -109,6 +116,8 @@ bool b;
 uint256 a;
 ```
 
+---
+
 ### Removed
 
 **Emoji:** 🪦
@@ -128,9 +137,11 @@ bool b;
 uint256 a;
 ```
 
+---
+
 ## Requirements
 
-Files must have the same names as the contracts.
+Files should be named after the contract they hold. `Example` → `Example.sol`
 
 The script utilizes Node.js to run. We recommend the node version defined in the `.nvmrc` file.
 
