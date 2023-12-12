@@ -9,7 +9,7 @@ if [ -z "$1" ]; then
 fi
 
 # Define the path to the new subdirectory
-old_version="storage_check_cache/"
+old_version="storage_delta_cache/"
 
 # Check if the directory exists, then remove it
 exists=0
@@ -80,8 +80,8 @@ find_sol_files "$search_directory" "filesWithPath_new"
 
 # REPORT DELETED ONES
 
-if [ -d "storage_check_report" ]; then
-  rm -rf "storage_check_report"
+if [ -d "storage_delta" ]; then
+  rm -rf "storage_delta"
 fi
 
 differences=()
@@ -94,8 +94,8 @@ for item in "${filesWithPath_old[@]}"; do
 done
 
 if [ ${#differences[@]} -gt 0 ]; then
-    mkdir -p "storage_check_report"
-    printf "%s\n" "${differences[@]}" > "storage_check_report/.removed"
+    mkdir -p "storage_delta"
+    printf "%s\n" "${differences[@]}" > "storage_delta/.removed"
 fi
 
 # ========================================================================

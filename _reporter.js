@@ -121,7 +121,7 @@ for (; i < alignedOldVisualized.length; i++) {
 reportOld = reportOld.slice(0, -1);
 reportNew = reportNew.slice(0, -1);
 
-const directoryPath = path.join("./storage_check_report", contractPath.dir);
+const directoryPath = path.join("./storage_delta", contractPath.dir);
 
 // Create directories recursively
 try {
