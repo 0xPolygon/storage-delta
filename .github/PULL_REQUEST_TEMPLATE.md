@@ -1,5 +1,3 @@
-# Pull Request
-
 ## Description
 
 Please include a summary of the change and which feature was implemented or which issue was fixed. Also, include relevant motivation and context. List any dependencies that are required for this change.
