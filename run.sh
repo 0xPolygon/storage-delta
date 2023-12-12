@@ -9,7 +9,7 @@ if [ -z "$1" ]; then
 fi
 
 # Define the path to the new subdirectory
-old_version="storage_delta_cache/"
+old_version=".storage_delta_cache/"
 
 # Check if the directory exists, then remove it
 exists=0
