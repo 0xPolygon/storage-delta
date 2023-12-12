@@ -20,124 +20,100 @@ Storage Delta compares the entire suite to any previous version.
 bash lib/storage-delta/run.sh <COMMIT_OR_TAG>
 ```
 
-`./storage_delta` will be generated if there are findings. Open `OLD` and `NEW` files side by side for best experience.
+`./storage_delta` will be generated if there are findings. Open `OLD` and `NEW` files side by side for the best experience.
 
 ## Findings
 
 |     | Finding                                    |
 | --- | ------------------------------------------ |
+| 🌱   | [New](#new)                                |
 | 🏴   | [Problematic](#problematic)                |
 | 🏳️   | [Moved](#moved)                            |
 | 🏁   | [Moved & problematic](#moved--problematic) |
 | 🪦   | [Removed](#removed)                        |
-| 🌱   | [New](#new)                                |
+|     | [Dirty bytes](#dirty-bytes)                |
 
 
 ### New
 
-**Emoji:** 🌱
-
-**Description:**
-
 When a variable with a unique name and type is added.
 
-**Example:**
-
 ```solidity
-uint256 a;
+    uint256 a
 ```
 
 ```solidity
-uint256 a;
-bool b;
+    uint256 a
+🌱  bool b
 ```
-
----
 
 ### Problematic
 
-**Emoji:** 🏴
-
-**Description:**
-
 When a new variable is added, but it conflicts with the existing storage.
 
-**Example:**
-
 ```solidity
-uint256 a;
+    uint256 a
 ```
 
 ```solidity
-bool b;
+🏴  bool b
 ```
-
----
 
 ### Moved
 
-**Emoji:** 🏳️
-
-**Description:**
-
 When an existing variable is moved.
 
-**Example:**
-
 ```solidity
-uint256 a;
-// ...
+    uint256 a
+    ...
 ```
 
 ```solidity
-// ...
-uint256 a;
+    ...
+🏳️  uint256 a 
 ```
-
----
 
 ### Moved & problematic
 
-**Emoji:** 🏁
-
-**Description:**
-
 When an existing variable is moved and conflicts with the existing storage.
 
-**Example:**
-
 ```solidity
-uint256 a;
-bool b;
+    uint256 a
+    bool b
 ```
 
 ```solidity
-bool b;
-uint256 a;
+🏁  bool b 
+🏁  uint256 a
 ```
-
----
 
 ### Removed
 
-**Emoji:** 🪦
-
-**Description:**
-
 When a variable no longer exists.
 
-**Example:**
-
 ```solidity
-uint256 a;
-bool b;
+    uint256 a
+    bool b
 ```
 
 ```solidity
-uint256 a;
+    uint256 a
+🪦
 ```
 
----
+### Dirty bytes
+
+
+When the storage is not clean.
+
+```solidity
+    uint256 a
+```
+
+```solidity
+🏴  uint128 a
+    16 dirty bytes
+```
 
 ## Requirements
 
