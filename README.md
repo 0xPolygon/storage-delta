@@ -1,4 +1,4 @@
-# ⟁ Storage Delta &nbsp;&nbsp;![GitHub Repo stars](https://img.shields.io/github/stars/0xPolygon/storage-delta?style=flat-square&labelColor=black&color=yellow)
+# ⟁ Storage Delta &nbsp;&nbsp;[![GitHub Repo stars](https://img.shields.io/github/stars/0xPolygon/storage-delta?style=flat-square&labelColor=black&color=white)](https://github.com/0xPolygon/storage-delta/stargazers)
 
 Storage Delta is a tool for inspecting storage layout changes between contract upgrades.
 
