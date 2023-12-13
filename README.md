@@ -1,20 +1,20 @@
 # ⟁ Storage Delta
 
-Storage Delta is a tool for inspecting storage layout changes between contract upgrades.
+Storage Delta is a tool for auditing storage layout changes during contract upgrades.
 
 ![Demo](./demo.gif)
 
 ## Install
 
-To install with [Foundry](https://github.com/foundry-rs/foundry):
+Powered by [Foundry](https://github.com/foundry-rs/foundry).
 
 ```bash
 forge install 0xPolygon/storage-delta
 ```
 
-## Usage
+## Run
 
-Storage Delta compares the entire suite to any previous version.
+Storage Delta analyzes the entire suite against any previous version.
 
 ```bash
 bash lib/storage-delta/run.sh <COMMIT_OR_TAG>
@@ -22,17 +22,16 @@ bash lib/storage-delta/run.sh <COMMIT_OR_TAG>
 
 `./storage_delta` will be generated if there are findings. Open `OLD` and `NEW` files side by side for the best experience.
 
-## Findings
+## Detectors
 
-|     | Finding                                    |
+|     | Description                                |
 | --- | ------------------------------------------ |
-| 🌱   | [New](#new)                                |
-| 🏴   | [Problematic](#problematic)                |
-| 🏳️   | [Moved](#moved)                            |
-| 🏁   | [Moved & problematic](#moved--problematic) |
-| 🪦   | [Removed](#removed)                        |
+| 🌱  | [New](#new)                                |
+| 🏴  | [Problematic](#problematic)                |
+| 🏳️  | [Moved](#moved)                            |
+| 🏁  | [Moved & problematic](#moved--problematic) |
+| 🪦  | [Removed](#removed)                        |
 |     | [Dirty bytes](#dirty-bytes)                |
-
 
 ### New
 
@@ -49,7 +48,7 @@ When a variable with a unique name and type is added.
 
 ### Problematic
 
-When a new variable is added, but it conflicts with the existing storage.
+When a new variable is added, but conflicts with the existing storage.
 
 ```solidity
     uint256 a
@@ -70,7 +69,7 @@ When an existing variable is moved.
 
 ```solidity
     ...
-🏳️  uint256 a 
+🏳️  uint256 a
 ```
 
 ### Moved & problematic
@@ -83,7 +82,7 @@ When an existing variable is moved and conflicts with the existing storage.
 ```
 
 ```solidity
-🏁  bool b 
+🏁  bool b
 🏁  uint256 a
 ```
 
@@ -102,7 +101,6 @@ When a variable no longer exists.
 ```
 
 ### Dirty bytes
-
 
 When the storage is not clean.
 
