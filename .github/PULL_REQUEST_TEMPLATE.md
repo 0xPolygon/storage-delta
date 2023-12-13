@@ -1,5 +1,3 @@
-# Pull Request
-
 ## Description
 
 Please include a summary of the change and which feature was implemented or which issue was fixed. Also, include relevant motivation and context. List any dependencies that are required for this change.
@@ -10,7 +8,7 @@ Fixes # (issue)
 
 Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Please also list any relevant details for your test configuration.
 
-# Checklist:
+## Checklist:
 
 - [ ] I have used the proper Node.js version (e.g., using the `.nvmrc` file and the `nvm use` command).
 - [ ] I have formatted my code using prettier
