@@ -8,7 +8,7 @@ const newData = JSON.parse(process.argv[3]);
 const contractPath = path.parse(process.argv[4]);
 const ignoreNew = JSON.parse(process.argv[5]);
 
-console.log("Ignore is :", ignoreNew);
+// console.log("Ignore is :", ignoreNew);
 // Skip if same
 if (JSON.stringify(oldData) === JSON.stringify(newData)) process.exit(0);
 
@@ -103,10 +103,8 @@ for (; i < alignedOldVisualized.length; i++) {
       }
     } else {
       if (!hasExisted(overlayedItem, oldVisualized)) {
-        if(!ignoreNew){
         printNew(true, "🌱");
         printOld(false);
-        }
       } else {
         printNew(true, "🏳️");
         printOld(false);
@@ -119,7 +117,7 @@ for (; i < alignedOldVisualized.length; i++) {
   }
 }
 
-// =========== ignore_if_all_new ==========================
+// ===========[ --skip -only-new ]==========================
 
 // Function to check for the presence of specified emojis
 function containsEmojis(str) {
@@ -129,7 +127,7 @@ function containsEmojis(str) {
 
 // Check if reportNew contains any of the specified emojis
  if(!containsEmojis(reportNew) && (ignoreNew)){
-  // console.log("No relevant emoji found, exiting script.");
+  console.log("\n-Note : Skipped, writing new report ( --skip = only-new)\n");
   process.exit(1); // Exit the script
 }
 
