@@ -6,7 +6,9 @@ const path = require("path");
 const oldData = JSON.parse(process.argv[2]);
 const newData = JSON.parse(process.argv[3]);
 const contractPath = path.parse(process.argv[4]);
+const ignoreNew = JSON.parse(process.argv[5]);
 
+console.log("Ignore is :", ignoreNew);
 // Skip if same
 if (JSON.stringify(oldData) === JSON.stringify(newData)) process.exit(0);
 
@@ -101,8 +103,10 @@ for (; i < alignedOldVisualized.length; i++) {
       }
     } else {
       if (!hasExisted(overlayedItem, oldVisualized)) {
+        if(!ignoreNew){
         printNew(true, "🌱");
         printOld(false);
+        }
       } else {
         printNew(true, "🏳️");
         printOld(false);
@@ -115,11 +119,28 @@ for (; i < alignedOldVisualized.length; i++) {
   }
 }
 
+// =========== ignore_if_all_new ==========================
+
+// Function to check for the presence of specified emojis
+function containsEmojis(str) {
+  const emojis = ["🏴", "🏳️", "🏁", "🪦"];
+  return emojis.some(emoji => str.includes(emoji));
+}
+
+// Check if reportNew contains any of the specified emojis
+ if(!containsEmojis(reportNew) && (ignoreNew)){
+  // console.log("No relevant emoji found, exiting script.");
+  process.exit(1); // Exit the script
+}
+
+
 // ========== REPORT FINDINGS ==========
 
 // remove \n from end of report
 reportOld = reportOld.slice(0, -1);
 reportNew = reportNew.slice(0, -1);
+
+
 
 const directoryPath = path.join("./storage_delta", contractPath.dir);
 
