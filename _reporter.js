@@ -5,10 +5,16 @@ const path = require("path");
 
 const oldData = JSON.parse(process.argv[2]);
 const newData = JSON.parse(process.argv[3]);
-const contractPath = path.parse(process.argv[4]);
 
+const contractPath = path.parse(process.argv[4]);
+const ignoreNew = process.argv[5];
+
+// console.log("Ignore is :", ignoreNew);
 // Skip if same
-if (JSON.stringify(oldData) === JSON.stringify(newData)) process.exit(0);
+if (JSON.stringify(oldData) === JSON.stringify(newData)) {
+  // console.log("\nReport Generation Skipped: No differences detected in storage layouts. This may indicate identical file contents.\n");
+  process.exit(0);
+}
 
 // ========== VISUALIZE LAYOUTS ==========
 
@@ -115,11 +121,28 @@ for (; i < alignedOldVisualized.length; i++) {
   }
 }
 
+// ===========[ --skip -only-new ]==========================
+
+// Function to check for the presence of specified emojis
+function containsEmojis(str) {
+  const emojis = ["🏴", "🏳️", "🏁", "🪦"];
+  return emojis.some(emoji => str.includes(emoji));
+}
+
+// Check if reportNew contains any of the specified emojis
+ if(!containsEmojis(reportNew) && (ignoreNew)){
+  // console.log("\n-Note : Skipped, writing new report ( --skip = only-new)\n");
+  process.exit(1); // Exit the script
+}
+
+
 // ========== REPORT FINDINGS ==========
 
 // remove \n from end of report
 reportOld = reportOld.slice(0, -1);
 reportNew = reportNew.slice(0, -1);
+
+
 
 const directoryPath = path.join("./storage_delta", contractPath.dir);
 

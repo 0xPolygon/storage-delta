@@ -8,6 +8,34 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
+# Variable to store whether --skip was used in parameters
+IGNORE_NEW=0
+POSITIONAL_ARGS=()
+
+# Parsing the command-line arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --skip)
+            shift # Remove --skip from processing
+            if [[ $1 == "only-new" ]]; then
+                IGNORE_NEW=1
+                shift # Remove the value from processing
+            else
+                echo "Error: --skip requires a value ( choices:[ "only-new" ])"
+                exit 1
+            fi
+            ;;
+        *)
+            # Store positional arguments
+            POSITIONAL_ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+# Restore positional arguments
+set -- "${POSITIONAL_ARGS[@]}"
+
 # Define the path to the new subdirectory
 old_version=".storage_delta_cache/"
 
@@ -112,7 +140,7 @@ for line in "${filesWithPath_old[@]}"; do
     output_old=$(forge inspect $formated_name storage)
     cd "$current_dir"
     output_new=$(forge inspect $formated_name storage)
-
-    node ./lib/storage-delta/_reporter.js "$output_old" "$output_new" ${line}
+    
+    node ./lib/storage-delta/_reporter.js "$output_old" "$output_new" ${line} $IGNORE_NEW
   fi
 done
