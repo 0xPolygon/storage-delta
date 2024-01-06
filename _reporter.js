@@ -55,7 +55,7 @@ for (; i < alignedOldVisualized.length; i++) {
   // Same start
   if (checkStart(overlayedItem, oldItem) === 1) {
     // auto
-    if (overlayedItem.label === "dirty") {
+    if (overlayedItem.label === "@dirty") {
       printNew(false, "🪦");
       printOld(true);
       continue;
@@ -73,7 +73,7 @@ for (; i < alignedOldVisualized.length; i++) {
       printOld(true);
     }
   } else if (checkStart(overlayedItem, oldItem) === 0) {
-    if (overlayedItem.label === "dirty") {
+    if (overlayedItem.label === "@dirty") {
       const diff = overlayedItem.end - overlayedItem.start;
       const s = diff === 1 ? "" : "s";
 
@@ -209,12 +209,12 @@ function overlayLayouts(oldArray, newArray) {
     } else if (oldItem) {
       // Handle the case where the old item has no corresponding new item
       if (!newItem || oldItem.end <= newItem.start) {
-        result.push({ label: "dirty", start: oldItem.start, end: oldItem.end });
+        result.push({ label: "@dirty", start: oldItem.start, end: oldItem.end });
         oldIndex++;
       } else {
         // Handle partial overlap or complete overlap of the old item by the new item
         if (oldItem.start < newItem.start) {
-          result.push({ label: "dirty", start: oldItem.start, end: newItem.start });
+          result.push({ label: "@dirty", start: oldItem.start, end: newItem.start });
         }
 
         // Update the old item's start if the new item ends within it
@@ -240,7 +240,7 @@ function alignLayouts(layout1, layout2) {
 
     for (const start of referenceStarts) {
       if (!baseLayout.some((item) => item.start === start)) {
-        result.push({ label: "undefined", start: start });
+        result.push({ label: "@undefined", start: start });
       }
     }
 
@@ -296,11 +296,11 @@ function hasExisted(item, oldLayout) {
 // IN: Item from aligned overlayed storage layout, old storage layout
 // OUT: -1 if no start, 0 diff/gt start, 1 if same start
 function checkStart(newItem, oldItem) {
-  if (newItem.label !== "undefined" && oldItem.label !== "undefined") {
+  if (newItem.label !== "@undefined" && oldItem.label !== "@undefined") {
     return 1;
-  } else if (oldItem.label === "undefined") {
+  } else if (oldItem.label === "@undefined") {
     return 0;
-  } else if (newItem.label === "undefined") {
+  } else if (newItem.label === "@undefined") {
     return -1;
   }
 
