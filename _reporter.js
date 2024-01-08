@@ -6,6 +6,7 @@ const path = require("path");
 const oldData = JSON.parse(process.argv[2]);
 const newData = JSON.parse(process.argv[3]);
 const contractPath = path.parse(process.argv[4]);
+const skipNew = process.argv[5];
 
 // Skip if same
 if (JSON.stringify(oldData) === JSON.stringify(newData)) process.exit(0);
@@ -42,20 +43,20 @@ for (; i < alignedOldVisualized.length; i++) {
   const oldItem = alignedOldVisualized[i];
   const overlayedItem = alignedOverlayedVisualized[i];
 
-  // overlayedItem can be undefined, "dirty", or a storage item
+  // overlayedItem can be undefined, dirty, or a storage item
   // oldItem can be undefined or a storage item
 
   // Emojis:
-  // 🏴 - Dirty
+  // 🏴 - Problematic
   // 🏳️ - Moved
-  // 🏁 - Dirty and moved
+  // 🏁 - Moved & problematic
   // 🪦 - Removed
   // 🌱 - New
 
   // Same start
   if (checkStart(overlayedItem, oldItem) === 1) {
     // auto
-    if (overlayedItem.label === "dirty") {
+    if (overlayedItem.label === "@dirty") {
       printNew(false, "🪦");
       printOld(true);
       continue;
@@ -73,7 +74,7 @@ for (; i < alignedOldVisualized.length; i++) {
       printOld(true);
     }
   } else if (checkStart(overlayedItem, oldItem) === 0) {
-    if (overlayedItem.label === "dirty") {
+    if (overlayedItem.label === "@dirty") {
       const diff = overlayedItem.end - overlayedItem.start;
       const s = diff === 1 ? "" : "s";
 
@@ -114,6 +115,11 @@ for (; i < alignedOldVisualized.length; i++) {
     printOld(true);
   }
 }
+
+// ========== OPTIONS ==========
+
+// Skip if only new findings
+if (!["🏴", "🏳️", "🏁", "🪦"].some((emoji) => reportNew.includes(emoji)) && skipNew) process.exit(1);
 
 // ========== REPORT FINDINGS ==========
 
@@ -209,12 +215,12 @@ function overlayLayouts(oldArray, newArray) {
     } else if (oldItem) {
       // Handle the case where the old item has no corresponding new item
       if (!newItem || oldItem.end <= newItem.start) {
-        result.push({ label: "dirty", start: oldItem.start, end: oldItem.end });
+        result.push({ label: "@dirty", start: oldItem.start, end: oldItem.end });
         oldIndex++;
       } else {
         // Handle partial overlap or complete overlap of the old item by the new item
         if (oldItem.start < newItem.start) {
-          result.push({ label: "dirty", start: oldItem.start, end: newItem.start });
+          result.push({ label: "@dirty", start: oldItem.start, end: newItem.start });
         }
 
         // Update the old item's start if the new item ends within it
@@ -240,7 +246,7 @@ function alignLayouts(layout1, layout2) {
 
     for (const start of referenceStarts) {
       if (!baseLayout.some((item) => item.start === start)) {
-        result.push({ label: "undefined", start: start });
+        result.push({ label: "@undefined", start: start });
       }
     }
 
@@ -296,11 +302,11 @@ function hasExisted(item, oldLayout) {
 // IN: Item from aligned overlayed storage layout, old storage layout
 // OUT: -1 if no start, 0 diff/gt start, 1 if same start
 function checkStart(newItem, oldItem) {
-  if (newItem.label !== "undefined" && oldItem.label !== "undefined") {
+  if (newItem.label !== "@undefined" && oldItem.label !== "@undefined") {
     return 1;
-  } else if (oldItem.label === "undefined") {
+  } else if (oldItem.label === "@undefined") {
     return 0;
-  } else if (newItem.label === "undefined") {
+  } else if (newItem.label === "@undefined") {
     return -1;
   }
 

@@ -1,12 +1,44 @@
 #!/bin/bash
 
-# CLONE OLD VERSION
+# HANDLE ERRORS
 
 # Check if the commit hash argument is provided
 if [ -z "$1" ]; then
-    echo "Please provide the commit hash or tag as an argument."
+    echo "Usage: bash lib/storage-delta <hash> [config]"
     exit 1
 fi
+
+# Process positional arguments
+POSITIONAL_ARGS=()
+SKIP_NEW=0
+
+# Parsing the command-line arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --skip)
+            shift # Remove --skip from processing
+            if [[ $1 == "new" ]]; then
+                SKIP_NEW=1
+                shift # Remove the value from processing
+            else
+                echo "Usage: --skip new"
+                exit 1
+            fi
+            ;;
+        *)
+            # Store positional arguments
+            POSITIONAL_ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+# Restore positional arguments
+set -- "${POSITIONAL_ARGS[@]}"
+
+# ========================================================================
+
+# CLONE OLD VERSION
 
 # Define the path to the new subdirectory
 old_version=".storage_delta_cache/"
@@ -112,7 +144,7 @@ for line in "${filesWithPath_old[@]}"; do
     output_old=$(forge inspect $formated_name storage)
     cd "$current_dir"
     output_new=$(forge inspect $formated_name storage)
-
-    node ./lib/storage-delta/_reporter.js "$output_old" "$output_new" ${line}
+    
+    node ./lib/storage-delta/_reporter.js "$output_old" "$output_new" ${line} $SKIP_NEW
   fi
 done
