@@ -145,6 +145,6 @@ for line in "${filesWithPath_old[@]}"; do
     cd "$current_dir"
     output_new=$(forge inspect $formated_name storage)
     
-    node ./lib/storage-delta/_reporter.js "$output_old" "$output_new" ${line} $IGNORE_NEW
+    node ./lib/storage-delta/_reporter.js "$output_old" "$output_new" ${line} $SKIP_NEW
   fi
 done
