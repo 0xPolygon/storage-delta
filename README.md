@@ -1,6 +1,6 @@
 # ⟁ Storage Delta
 
-Storage Delta is a tool for auditing storage layout changes during contract upgrades.
+Storage Delta is a tool for auditing storage layout changes during upgrades.
 
 ![Demo](./demo.gif)
 
@@ -112,6 +112,12 @@ When the storage is not clean.
 🏴  uint128 a
     16 dirty bytes
 ```
+
+## Configuration
+
+| Option   | Values | Description                                          |
+| -------- | ------ | ---------------------------------------------------- |
+| `--skip` | `new`  | Does not generate a report with only those findings. |
 
 ## Requirements
 
