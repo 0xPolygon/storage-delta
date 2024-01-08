@@ -1,27 +1,27 @@
 #!/bin/bash
 
-# CLONE OLD VERSION
+# HANDLE ERRORS
 
 # Check if the commit hash argument is provided
 if [ -z "$1" ]; then
-    echo "Please provide the commit hash or tag as an argument."
+    echo "Usage: bash lib/storage-delta <hash> [config]"
     exit 1
 fi
 
-# Variable to store whether --skip was used in parameters
-IGNORE_NEW=0
+# Process positional arguments
 POSITIONAL_ARGS=()
+SKIP_NEW=0
 
 # Parsing the command-line arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --skip)
             shift # Remove --skip from processing
-            if [[ $1 == "only-new" ]]; then
-                IGNORE_NEW=1
+            if [[ $1 == "new" ]]; then
+                SKIP_NEW=1
                 shift # Remove the value from processing
             else
-                echo "Error: --skip requires a value ( choices:[ "only-new" ])"
+                echo "Usage: --skip new"
                 exit 1
             fi
             ;;
@@ -35,6 +35,10 @@ done
 
 # Restore positional arguments
 set -- "${POSITIONAL_ARGS[@]}"
+
+# ========================================================================
+
+# CLONE OLD VERSION
 
 # Define the path to the new subdirectory
 old_version=".storage_delta_cache/"
