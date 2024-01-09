@@ -11,12 +11,15 @@ const skipNew = process.argv[5];
 // Skip if same
 if (JSON.stringify(oldData) === JSON.stringify(newData)) process.exit(0);
 
+// array including all gaps
+const gaps = [];
+
 // ========== VISUALIZE LAYOUTS ==========
 
-const oldVisualized = createLayout(oldData);
+const oldVisualized = createLayout(oldData, true);
 //console.log(JSON.stringify(oldVisualized, null, 2));
 
-const newVisualized = createLayout(newData);
+const newVisualized = createLayout(newData, false);
 //console.log(JSON.stringify(newVisualized, null, 2));
 
 const overlayedVisualized = overlayLayouts(oldVisualized, newVisualized);
@@ -52,7 +55,12 @@ for (; i < alignedOldVisualized.length; i++) {
   // 🏁 - Moved & problematic
   // 🪦 - Removed
   // 🌱 - New
+  // 🔻 - Fitting in the gap
 
+  if (variableFitInGap(overlayedItem.start, overlayedItem.end, gaps) && overlayedItem.label != "__gap") {
+    reportNew += formatLine("🔻", overlayedItem);
+    continue;
+  }
   // Same start
   if (checkStart(overlayedItem, oldItem) === 1) {
     // auto
@@ -147,7 +155,7 @@ fs.writeFileSync(reportNewPath, reportNew);
 
 // IN: Storage layout JSON
 // OUT: Easy to read storage layout JSON
-function createLayout(data) {
+function createLayout(data, isOldLayout) {
   const result = [];
 
   function calcStart(item) {
@@ -169,6 +177,10 @@ function createLayout(data) {
       slot: item.slot,
       offset: item.offset,
     };
+    if (isOldLayout && item.label == "__gap") {
+      gaps.push({ start, end });
+      //console.log(gaps);
+    }
     result.push(json);
   }
 
@@ -346,4 +358,15 @@ function formatLine(emoji, item) {
   }
 
   return `${emoji}  ${slot}${offset}   ${label}    ${type}\n`;
+}
+
+// IN: start and end bytes of a variable and gaps array
+// OUT: bool indicating if variable occupies storage reserved by gap
+function variableFitInGap(variableStart, variableEnd, gaps) {
+  for (const gap of gaps) {
+    if (variableStart >= gap.start && variableEnd <= gap.end) {
+      return true;
+    }
+  }
+  return false;
 }
