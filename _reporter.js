@@ -6,9 +6,9 @@ const path = require("path");
 const oldData = JSON.parse(process.argv[2]);
 const newData = JSON.parse(process.argv[3]);
 const contractPath = path.parse(process.argv[4]);
-const skipNew = process.argv[5];
+const omitNew = process.argv[5];
 
-// Skip if same
+// Omit if same
 if (JSON.stringify(oldData) === JSON.stringify(newData)) process.exit(0);
 
 // ========== VISUALIZE LAYOUTS ==========
@@ -118,8 +118,8 @@ for (; i < alignedOldVisualized.length; i++) {
 
 // ========== OPTIONS ==========
 
-// Skip if only new findings
-if (!["🏴", "🏳️", "🏁", "🪦"].some((emoji) => reportNew.includes(emoji)) && skipNew) process.exit(1);
+// --omit report if only New findings
+if (!["🏴", "🏳️", "🏁", "🪦"].some((emoji) => reportNew.includes(emoji)) && omitNew) process.exit(1);
 
 // ========== REPORT FINDINGS ==========
 
