@@ -4,7 +4,7 @@
 
 # Check if the commit hash argument is provided
 if [ -z "$1" ]; then
-    echo "Usage: bash lib/storage-delta <hash> [config]"
+    echo "Usage: bash lib/storage-delta/run.sh <hash> [config]"
     exit 1
 fi
 
