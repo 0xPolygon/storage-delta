@@ -1,6 +1,6 @@
 # ⟁ Storage Delta
 
-Storage Delta is a tool for auditing storage layout changes during upgrades.
+Storage Delta is a tool for auditing storage layout changes during contract upgrades.
 
 ![Demo](./demo.gif)
 
@@ -14,7 +14,7 @@ forge install 0xPolygon/storage-delta
 
 ## Run
 
-Storage Delta analyzes the entire suite against any previous version.
+Storage Delta analyzes the entire contract suite against any previous version.
 
 ```bash
 bash lib/storage-delta/run.sh <COMMIT_OR_TAG>
