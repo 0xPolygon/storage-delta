@@ -10,18 +10,18 @@ fi
 
 # Process positional arguments
 POSITIONAL_ARGS=()
-SKIP_NEW=0
+OMIT_NEW=0
 
 # Parsing the command-line arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --skip)
-            shift # Remove --skip from processing
+        --omit)
+            shift # Remove --omit from processing
             if [[ $1 == "new" ]]; then
-                SKIP_NEW=1
+                OMIT_NEW=1
                 shift # Remove the value from processing
             else
-                echo "Usage: --skip new"
+                echo "Usage: --omit new"
                 exit 1
             fi
             ;;
@@ -145,6 +145,6 @@ for line in "${filesWithPath_old[@]}"; do
     cd "$current_dir"
     output_new=$(forge inspect $formated_name storage)
     
-    node ./lib/storage-delta/_reporter.js "$output_old" "$output_new" ${line} $SKIP_NEW
+    node ./lib/storage-delta/_reporter.js "$output_old" "$output_new" ${line} $OMIT_NEW
   fi
 done

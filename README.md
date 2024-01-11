@@ -115,9 +115,9 @@ When the storage is not clean.
 
 ## Configuration
 
-| Option   | Values | Description                                          |
-| -------- | ------ | ---------------------------------------------------- |
-| `--skip` | `new`  | Does not generate a report with only those findings. |
+| Option   | Values | Description                                        |
+| -------- | ------ | -------------------------------------------------- |
+| `--omit` | `new`  | Do not generate a report with only those findings. |
 
 ## Requirements
 
