@@ -172,7 +172,6 @@ compare_storage_layouts() {
 
 # Hot-reload
 while true; do
-  echo "Entered while loop"
   changed_file=$(inotifywait -r -e close_write,moved_to,create --format '%w%f' src/*.sol src/**/*.sol)
   echo "Changes detected in $changed_file, generating new reports..."
   compare_storage_layouts "$changed_file"
