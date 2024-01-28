@@ -130,6 +130,20 @@ if [ ${#differences[@]} -gt 0 ]; then
     printf "%s\n" "${differences[@]}" > "storage_delta/.removed"
 fi
 
+additions=()
+for item in "${filesWithPath_new[@]}"; do
+    skip=
+    for itemB in "${filesWithPath_old[@]}"; do
+        [[ $item == $itemB ]] && { skip=1; break; }
+    done
+    [[ -n $skip ]] || additions+=("$item")
+done
+
+if [ ${#additions[@]} -gt 0 ]; then
+    mkdir -p "storage_delta"
+    printf "%s\n" "${additions[@]}" > "storage_delta/.added"
+fi
+
 # ========================================================================
 
 # COMPARE STORAGE LAYOUTS
