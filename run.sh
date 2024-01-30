@@ -170,9 +170,18 @@ compare_storage_layouts() {
   fi
 }
 
-# Hot-reload
 while true; do
-  changed_file=$(inotifywait -r -e close_write,moved_to,create --format '%w%f' src/*.sol src/**/*.sol)
-  echo "Changes detected in $changed_file, generating new reports..."
-  compare_storage_layouts "$changed_file"
+  inotifywait -e modify --format "%w%f" -r "${filesWithPath_new[@]}" |
+  while read -r changed_file; do
+    # Check if the changed file is not empty
+    if [ -n "$changed_file" ]; then
+      # Check if the file is in filesWithPath_new but not in filesWithPath_old
+      if [[ " ${filesWithPath_old[@]} " != *"$changed_file"* ]]; then
+        echo "Can't generate report for newly created file: $changed_file"
+      else
+        echo "Reloading due to changes in $changed_file"
+        compare_storage_layouts "$changed_file"
+      fi
+    fi
+  done
 done
