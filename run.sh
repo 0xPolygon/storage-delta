@@ -148,3 +148,40 @@ for line in "${filesWithPath_old[@]}"; do
     node ./lib/storage-delta/_reporter.js "$output_old" "$output_new" ${line} $OMIT_NEW
   fi
 done
+
+# ========================================================================
+
+# Function to compare storage layouts for a single file
+compare_storage_layouts() {
+  local file_to_compare="$1"
+
+  # Check if the specified file exists
+  if [ -e "$file_to_compare" ]; then
+    # Run the 'forge inspect' command for the specified file
+    formated_name=$(basename "${file_to_compare%.*}")
+    cd "$old_version"
+    output_old=$(forge inspect $formated_name storage)
+    cd "$current_dir"
+    output_new=$(forge inspect $formated_name storage)
+
+    node ./lib/storage-delta/_reporter.js "$output_old" "$output_new" "$file_to_compare" $OMIT_NEW
+  else
+    echo "Specified file not found: $file_to_compare"
+  fi
+}
+
+while true; do
+  inotifywait -e modify --format "%w%f" -r "${filesWithPath_new[@]}" |
+  while read -r changed_file; do
+    # Check if the changed file is not empty
+    if [ -n "$changed_file" ]; then
+      # Check if the file is in filesWithPath_new but not in filesWithPath_old
+      if [[ " ${filesWithPath_old[@]} " != *"$changed_file"* ]]; then
+        echo "Can't generate report for newly created file: $changed_file"
+      else
+        echo "Reloading due to changes in $changed_file"
+        compare_storage_layouts "$changed_file"
+      fi
+    fi
+  done
+done
